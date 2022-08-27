@@ -1,0 +1,15 @@
+.dart_tool
+.idea
+android
+ios
+linux
+macos
+test
+web
+windows
+.metadata
+.packages
+analysis_options.yaml
+letstalk.iml
+pubspec.lock
+README.md
