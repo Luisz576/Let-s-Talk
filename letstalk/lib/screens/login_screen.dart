@@ -63,6 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ) :
       Scaffold(
         appBar: AppBar(
+          backgroundColor: AppColors.primaryColor,
           title: const Text("Let's Talk",
             style: TextStyle(
               fontSize: 26,
@@ -71,8 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-        backgroundColor: AppColors.whiteColor,
-        body: LoginTab(),
+        body: const LoginTab(),
       );
   }
 }

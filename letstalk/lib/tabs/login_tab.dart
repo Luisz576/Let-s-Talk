@@ -3,6 +3,7 @@ import 'package:letstalk/functions/show_snack_bar.dart';
 import 'package:letstalk/screens/chat_screen.dart';
 import 'package:letstalk/services/server.dart';
 import 'package:letstalk/utils/app_colors.dart';
+import 'package:letstalk/widgets/custom_input.dart';
 
 class LoginTab extends StatefulWidget {
   const LoginTab({Key? key}) : super(key: key);
@@ -24,52 +25,46 @@ class _LoginTabState extends State<LoginTab> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 25),
-      child: Column(
+      child: ListView(
         children: [
-          const Text("Crie uma conta!",
-            style: TextStyle(
-              color: AppColors.secondaryColor,
-              fontSize: 32,
-              fontWeight: FontWeight.bold
+          const Align(
+            alignment: Alignment.center,
+            child: Text("Crie uma conta!",
+              style: TextStyle(
+                color: AppColors.secondaryColor,
+                fontSize: 32,
+                fontWeight: FontWeight.bold
+              ),
             ),
           ),
-          TextField(
+          const SizedBox(height: 30,),
+          CustomInput(
             controller: usernameSignUpController,
-            decoration: const InputDecoration(
-              hintText: "Insira um nome de usuário",
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: AppColors.secondaryColor
-                )
-              )
-            ),
+            hintText: "Insira um nome de usuário",
+            hintColor: AppColors.hintSecondaryColor,
+            borderColor: AppColors.secondaryColor
           ),
-          TextField(
+          const SizedBox(height: 20,),
+          CustomInput(
             controller: passwordSignUpController,
-            decoration: const InputDecoration(
-              hintText: "Insira uma senha",
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: AppColors.secondaryColor
-                )
-              )
-            ),
+            hintText: "Insira uma senha",
+            hintColor: AppColors.hintSecondaryColor,
+            borderColor: AppColors.secondaryColor,
+            obscureText: true
           ),
-          TextField(
+          const SizedBox(height: 20,),
+          CustomInput(
             controller: confirmPasswordSignUpController,
-            decoration: const InputDecoration(
-              hintText: "Insira a senha novamente",
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: AppColors.secondaryColor
-                )
-              )
-            ),
+            hintText: "Insira a senha novamente",
+            hintColor: AppColors.hintSecondaryColor,
+            borderColor: AppColors.secondaryColor,
+            obscureText: true
           ),
+          const SizedBox(height: 20,),
           ElevatedButton(
             onPressed: (){
               if(isSignUpLoading || isSignInLoading) return;
-              if(usernameSignUpController.text.trim().length > 5 || usernameSignUpController.text.trim().length > 16){
+              if(usernameSignUpController.text.trim().length < 5 || usernameSignUpController.text.trim().length > 16){
                 showSnackBar(context,
                   title: "O nome de usuário deve ter de 5 a 16 caracteres!",
                   titleColor: AppColors.secondaryColor,
@@ -121,51 +116,60 @@ class _LoginTabState extends State<LoginTab> {
                 }
               });
             },
-            child: isSignUpLoading ?
-              const CircularProgressIndicator(
-                color: AppColors.whiteColor,
-              ) :
-              const Text("Cadastrar-me",
-              style: TextStyle(
-                color: AppColors.whiteColor,
-                fontSize: 18,
-                fontWeight: FontWeight.bold
+            style: ElevatedButton.styleFrom(
+              primary: AppColors.secondaryColor
+            ),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width - 50,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: isSignUpLoading ?
+                    const CircularProgressIndicator(
+                      color: AppColors.whiteColor,
+                    ) :
+                    const Text("Cadastrar-me",
+                    style: TextStyle(
+                      color: AppColors.whiteColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
-          const Text("Ou faça login!",
-            style: TextStyle(
-              color: AppColors.terciaryColor,
-              fontSize: 18,
-              fontWeight: FontWeight.bold
+          const SizedBox(height: 50,),
+          const Align(
+            alignment: Alignment.center,
+            child: Text("Ou faça login!",
+              style: TextStyle(
+                color: AppColors.terciaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.w600
+              ),
             ),
           ),
-          TextField(
+          const SizedBox(height: 30,),
+          CustomInput(
             controller: usernameController,
-            decoration: const InputDecoration(
-              hintText: "Insira seu nome de usuário",
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: AppColors.terciaryColor
-                )
-              )
-            ),
+            hintText: "Insira seu nome de usuário",
+            hintColor: AppColors.hintTerciaryColor,
+            borderColor: AppColors.terciaryColor
           ),
-          TextField(
+          const SizedBox(height: 20,),
+          CustomInput(
             controller: passwordController,
-            decoration: const InputDecoration(
-              hintText: "Insira sua senha",
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: AppColors.terciaryColor
-                )
-              )
-            ),
+            hintText: "Insira sua senha",
+            hintColor: AppColors.hintTerciaryColor,
+            borderColor: AppColors.terciaryColor,
+            obscureText: true,
           ),
+          const SizedBox(height: 20,),
           ElevatedButton(
             onPressed: (){
               if(isSignUpLoading || isSignInLoading) return;
-              if(usernameController.text.trim().length > 5 || usernameController.text.trim().length > 16
+              if(usernameController.text.trim().length < 5 || usernameController.text.trim().length > 16
                 || passwordController.text.trim().length < 8 || passwordController.text.trim().length > 16){
                 showSnackBar(context,
                   title: "Preencha os campos corretamente!",
@@ -202,18 +206,30 @@ class _LoginTabState extends State<LoginTab> {
                 }
               });
             },
-            child: isSignInLoading ?
-              const CircularProgressIndicator(
-                color: AppColors.whiteColor,
-              ) :
-              const Text("Entrar",
-              style: TextStyle(
-                color: AppColors.whiteColor,
-                fontSize: 18,
-                fontWeight: FontWeight.bold
+            style: ElevatedButton.styleFrom(
+              primary: AppColors.terciaryColor
+            ),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width - 50,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: isSignInLoading ?
+                    const CircularProgressIndicator(
+                      color: AppColors.whiteColor,
+                    ) :
+                    const Text("Entrar",
+                    style: TextStyle(
+                      color: AppColors.whiteColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
               ),
             ),
-          )
+          ),
+          const SizedBox(height: 50,)
         ],
       ),
     );
