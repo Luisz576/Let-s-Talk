@@ -1,3 +1,4 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:letstalk/models/user.dart';
 
 class Server{
@@ -5,6 +6,10 @@ class Server{
   static User? _user;
   static User? get currentUser => _user;
   
+  static void logout(){
+    _user = null;
+  }
+
   static Future<User?> signUpWithUsernameAndPassword(String username, String password) async{
     //TODO
     await Future.delayed(const Duration(seconds: 1));
@@ -33,7 +38,15 @@ class Server{
     return false;
   }
 
-  static Future<bool> changeProfileImage() async{
+  static Future<bool> changePassword(String currentPassword, String newPassword) async{
+    if(_user != null){
+      //TODO
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> changeProfileImage(XFile file) async{
     if(_user != null){
       //TODO
       return true;

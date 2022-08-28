@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:letstalk/screens/settings_screen.dart';
-import 'package:letstalk/tabs/schat_tab.dart';
+import 'package:letstalk/tabs/chat_tab.dart';
 import 'package:letstalk/utils/app_colors.dart';
 
 class ChatScreen extends StatefulWidget {
