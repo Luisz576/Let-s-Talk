@@ -4,6 +4,7 @@ import 'package:letstalk/screens/chat_screen.dart';
 import 'package:letstalk/services/server.dart';
 import 'package:letstalk/utils/app_colors.dart';
 import 'package:letstalk/widgets/custom_input.dart';
+import 'package:letstalk/widgets/large_button.dart';
 
 class LoginTab extends StatefulWidget {
   const LoginTab({Key? key}) : super(key: key);
@@ -61,7 +62,7 @@ class _LoginTabState extends State<LoginTab> {
             obscureText: true
           ),
           const SizedBox(height: 20,),
-          ElevatedButton(
+          LargeButton(
             onPressed: (){
               if(isSignUpLoading || isSignInLoading) return;
               if(usernameSignUpController.text.trim().length < 5 || usernameSignUpController.text.trim().length > 16){
@@ -116,26 +117,16 @@ class _LoginTabState extends State<LoginTab> {
                 }
               });
             },
-            style: ElevatedButton.styleFrom(
-              primary: AppColors.secondaryColor
-            ),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width - 50,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: isSignUpLoading ?
-                    const CircularProgressIndicator(
-                      color: AppColors.whiteColor,
-                    ) :
-                    const Text("Cadastrar-me",
-                    style: TextStyle(
-                      color: AppColors.whiteColor,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold
-                    ),
-                  ),
-                ),
+            backgroundColor: AppColors.secondaryColor,
+            child: isSignUpLoading ?
+              const CircularProgressIndicator(
+                color: AppColors.whiteColor,
+              ) :
+              const Text("Cadastrar-me",
+              style: TextStyle(
+                color: AppColors.whiteColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold
               ),
             ),
           ),
@@ -166,7 +157,7 @@ class _LoginTabState extends State<LoginTab> {
             obscureText: true,
           ),
           const SizedBox(height: 20,),
-          ElevatedButton(
+          LargeButton(
             onPressed: (){
               if(isSignUpLoading || isSignInLoading) return;
               if(usernameController.text.trim().length < 5 || usernameController.text.trim().length > 16
@@ -206,26 +197,16 @@ class _LoginTabState extends State<LoginTab> {
                 }
               });
             },
-            style: ElevatedButton.styleFrom(
-              primary: AppColors.terciaryColor
-            ),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width - 50,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: isSignInLoading ?
-                    const CircularProgressIndicator(
-                      color: AppColors.whiteColor,
-                    ) :
-                    const Text("Entrar",
-                    style: TextStyle(
-                      color: AppColors.whiteColor,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold
-                    ),
-                  ),
-                ),
+            backgroundColor: AppColors.terciaryColor,
+            child: isSignInLoading ?
+              const CircularProgressIndicator(
+                color: AppColors.whiteColor,
+              ) :
+              const Text("Entrar",
+              style: TextStyle(
+                color: AppColors.whiteColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold
               ),
             ),
           ),

@@ -24,4 +24,21 @@ class Server{
     return _user;
   }
 
+  static Future<bool> changeUsername(String newUsername) async{
+    if(_user != null){
+      //TODO
+      _user = User(newUsername);
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> changeProfileImage() async{
+    if(_user != null){
+      //TODO
+      return true;
+    }
+    return false;
+  }
+
 }
