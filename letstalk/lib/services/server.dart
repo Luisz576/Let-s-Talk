@@ -54,4 +54,12 @@ class Server{
     return false;
   }
 
+  static Future<bool> sendMessage(String message) async{
+    if(_user != null){
+      //TODO
+      return true;
+    }
+    return false;
+  }
+
 }

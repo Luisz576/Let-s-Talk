@@ -33,8 +33,8 @@ class _EditableCampState extends State<EditableCamp> {
             buildCounter: (context, {currentLength = 0, isFocused = false, maxLength}) => null,
             decoration: InputDecoration(
               hintText: widget.hintText,
-              errorBorder: InputBorder.none,
               //border: null,
+              errorBorder: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
