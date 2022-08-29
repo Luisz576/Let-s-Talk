@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:letstalk/functions/show_snack_bar.dart';
 import 'package:letstalk/screens/chat_screen.dart';
+import 'package:letstalk/services/database.dart';
 import 'package:letstalk/services/server.dart';
 import 'package:letstalk/utils/app_colors.dart';
 import 'package:letstalk/widgets/custom_input.dart';
@@ -20,11 +21,62 @@ class _LoginTabState extends State<LoginTab> {
   final TextEditingController usernameController = TextEditingController(),
                             passwordController = TextEditingController();
   bool isSignUpLoading = false,
-    isSignInLoading = false;
+    isSignInLoading = false,
+    isLoggingIn = true;
+
+  @override
+  void initState() {
+    super.initState();
+    login();
+  }
+
+  login() async{
+    Database.getSavedToken().then((token){
+      if(token != null){
+        Server.loginWithToken(token).then((user){
+          if(user != null){
+            _connected();
+          }else{
+            showSnackBar(context,
+              title: "Token inválido!",
+              titleColor: AppColors.secondaryColor,
+              backgroundColor: AppColors.errorColor
+            );
+            setState(() {
+              isLoggingIn = false;
+            });
+          }
+        });
+      }else{
+        setState(() {
+          isLoggingIn = false;
+        });
+      }
+    });
+  }
+
+  _connected(){
+    Navigator.pushAndRemoveUntil(context,
+      MaterialPageRoute(
+        builder: (context) => const ChatScreen(),
+      ),
+      (route) => false
+    );
+    showSnackBar(context,
+      title: "Conectado com sucesso!",
+      titleColor: AppColors.whiteColor,
+      backgroundColor: AppColors.sucessColor
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return isLoggingIn ?
+      const Center(
+        child: CircularProgressIndicator(
+          color: AppColors.terciaryColor,
+        ),
+      ) : Padding(
       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 25),
       child: ListView(
         children: [
@@ -94,17 +146,8 @@ class _LoginTabState extends State<LoginTab> {
               });
               Server.signUpWithUsernameAndPassword(usernameSignUpController.text.trim(), passwordSignUpController.text.trim()).then((user){
                 if(user != null){
-                  Navigator.pushAndRemoveUntil(context,
-                    MaterialPageRoute(
-                      builder: (context) => const ChatScreen(),
-                    ),
-                    (route) => false
-                  );
-                  showSnackBar(context,
-                    title: "Conectado com sucesso!",
-                    titleColor: AppColors.whiteColor,
-                    backgroundColor: AppColors.sucessColor
-                  );
+                  Database.saveToken(user.token!);
+                  _connected();
                 }else{
                   setState(() {
                     isSignUpLoading = false;
@@ -174,17 +217,8 @@ class _LoginTabState extends State<LoginTab> {
               });
               Server.loginWithUsernameAndPassword(usernameController.text.trim(), passwordController.text.trim()).then((user){
                 if(user != null){
-                  Navigator.pushAndRemoveUntil(context,
-                    MaterialPageRoute(
-                      builder: (context) => const ChatScreen(),
-                    ),
-                    (route) => false
-                  );
-                  showSnackBar(context,
-                    title: "Conectado com sucesso!",
-                    titleColor: AppColors.whiteColor,
-                    backgroundColor: AppColors.sucessColor
-                  );
+                  Database.saveToken(user.token!);
+                  _connected();
                 }else{
                   setState(() {
                     isSignInLoading = false;

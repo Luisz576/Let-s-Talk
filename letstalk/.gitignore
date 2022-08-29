@@ -13,3 +13,4 @@ analysis_options.yaml
 letstalk.iml
 pubspec.lock
 README.md
+lib/firebase_options.dart

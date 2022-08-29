@@ -34,6 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
           )
         ],
       ),
+      backgroundColor: AppColors.whiteColor,
       body: const ChatTab(),
     );
   }

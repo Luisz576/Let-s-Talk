@@ -18,6 +18,7 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
       ),
+      backgroundColor: AppColors.whiteColor,
       body: const SettingsTab(),
     );
   }

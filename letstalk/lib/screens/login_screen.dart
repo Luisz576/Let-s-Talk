@@ -72,6 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
+        backgroundColor: AppColors.whiteColor,
         body: const LoginTab(),
       );
   }

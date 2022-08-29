@@ -5,4 +5,11 @@ class Message{
   final String message;
 
   Message({required this.owner, required this.message});
+
+  Map<String, Object?> toJson(){
+    return {
+      "owner": owner.id,
+      "message": message
+    };
+  }
 }

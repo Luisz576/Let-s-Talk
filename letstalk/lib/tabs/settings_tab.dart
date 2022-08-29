@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:letstalk/functions/show_snack_bar.dart';
 import 'package:letstalk/screens/login_screen.dart';
 import 'package:letstalk/services/database.dart';
@@ -89,24 +88,28 @@ class _SettingsTabState extends State<SettingsTab> {
                   setState(() {
                     isUploading = true;
                   });
-                  Server.changeProfileImage(file).then((res){
-                    if(res){
+                  Server.changeProfileImage(file,
+                    whenComplete: (){
                       showSnackBar(context,
                         title: "Imagem alterada com sucesso!",
                         backgroundColor: AppColors.sucessColor,
                         titleColor: AppColors.whiteColor
                       );
-                    }else{
+                      setState(() {
+                        isUploading = false;
+                      });
+                    },
+                    whenError: (){
                       showSnackBar(context,
                         title: "Não foi possível alterar a imagem de perfil!",
                         backgroundColor: AppColors.errorColor,
                         titleColor: AppColors.whiteColor
                       );
+                      setState(() {
+                        isUploading = false;
+                      });
                     }
-                    setState(() {
-                      isUploading = false;
-                    });
-                  });
+                  );
                 }else{
                   showSnackBar(context,
                     title: "Nenhum imagem selecionada!",
@@ -158,14 +161,6 @@ class _SettingsTabState extends State<SettingsTab> {
                     titleColor: AppColors.whiteColor
                   );
                   return;
-              }
-              if(currentPassowordController.text.trim() != newPasswordController.text.trim()){
-                showSnackBar(context,
-                  title: "As senhas devem ser iguais",
-                  backgroundColor: AppColors.errorColor,
-                  titleColor: AppColors.whiteColor
-                );
-                return;
               }
               setState(() {
                 isChangingPassword = true;

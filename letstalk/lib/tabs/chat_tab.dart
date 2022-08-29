@@ -9,7 +9,7 @@ class ChatTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Expanded(
+        const Expanded(
           flex: 5,
           child: MessagesList(),
         ),

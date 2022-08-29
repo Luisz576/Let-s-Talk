@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:letstalk/models/enums/flag.dart';
 import 'package:letstalk/utils/app_colors.dart';
 
 class MessageTile extends StatelessWidget {
   final String user, message;
+  final List<Flag> flags;
   final String? imageUrl;
   final bool isFromSelf;
-  const MessageTile({required this.user, required this.message, required this.isFromSelf, this.imageUrl, Key? key}) : super(key: key);
+  const MessageTile({required this.user, required this.message, required this.flags, required this.isFromSelf, this.imageUrl, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

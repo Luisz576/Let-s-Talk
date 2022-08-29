@@ -1,14 +1,18 @@
 import 'package:letstalk/models/enums/flag.dart';
 
 class User{
+  final String _id;
+  final String? token;
   String username;
-  String? urlImage, token;
+  String? urlImage;
   final List<Flag> _flags = [];
 
-  User(this.username);
+  User(this._id, this.username, {this.token});
+
+  String get id => _id;
 
   List<Flag> get flags => List<Flag>.unmodifiable(_flags);
-  set addFlag(Flag flag){
+  addFlag(Flag flag){
     if(!_flags.contains(flag)){
       _flags.add(flag);
     }
