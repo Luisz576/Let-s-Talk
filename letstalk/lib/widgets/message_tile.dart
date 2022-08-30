@@ -14,7 +14,7 @@ class MessageTile extends StatelessWidget {
     return Container(
       color: isFromSelf ? AppColors.fourthColor : AppColors.fifthColor,
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -23,6 +23,15 @@ class MessageTile extends StatelessWidget {
                 Expanded(
                   child: Container(),
                 ),
+                Row(
+                  children: flags.map(
+                    (flag) => Icon(flag.getIcon(),
+                      color: AppColors.terciaryColor,
+                      size: 16,
+                    )
+                  ).toList(),
+                ),
+                const SizedBox(width: 3,),
                 Text(user,
                   style: const TextStyle(
                     color: AppColors.terciaryColor,
@@ -51,6 +60,15 @@ class MessageTile extends StatelessWidget {
                     fontSize: 18,
                     fontWeight: FontWeight.bold
                   ),
+                ),
+                const SizedBox(width: 3,),
+                Row(
+                  children: flags.map(
+                    (flag) => Icon(flag.getIcon(),
+                      color: AppColors.terciaryColor,
+                      size: 16,
+                    )
+                  ).toList(),
                 ),
               ],
             ),
