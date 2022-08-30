@@ -140,10 +140,31 @@ class Server{
     return false;
   }
 
-  static Stream<QuerySnapshot> getMessages(){
+  static Stream<List<Future<Message>>> getMessages(){
+    return _firebaseFirestore.collection("messages").snapshots().map((e) => e.docs).map((list){
+      return list.map((document) async{
+        return Message(
+          owner: await _getUserById(document.data()["owner"]),
+          message: document.data()["message"]
+        );
+      }).toList();
+    });
+  }
+
+  static Future<User?> _getUserById(String id) async{
     // this code is unsecure, is recommeded you change it
-    //TODO
-    return _firebaseFirestore.collection("messages").snapshots();
+    final data = await _firebaseDatabase.ref("users/$id").get();
+    if(data.exists){
+      User user = User(data.child("id").value.toString(), data.child("username").value.toString());
+      user.urlImage = data.child("imageUrl").value != null ? data.child("imageUrl").value!.toString() : null;
+      if(data.child("flags").value != null){
+        for(Object flag in data.child("flags").value! as List){
+          user.addFlag(Flag.fromValue(flag.toString()));
+        }
+      }
+      return user;
+    }
+    return null;
   }
 
   static Future<User?> _getUserByUsername(String username) async{

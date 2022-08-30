@@ -31,16 +31,16 @@ class MessageTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10,),
-                imageUrl != null ? CircleAvatar(
-                  child: Image.network(imageUrl!),
+                imageUrl != null && imageUrl!.trim().isNotEmpty ? CircleAvatar(
+                  backgroundImage: NetworkImage(imageUrl!),
                 ) : CircleAvatar(
                   child: Container(),
                 ),
               ],
             ) : Row(
               children: [
-                imageUrl != null ? CircleAvatar(
-                  child: Image.network(imageUrl!),
+                imageUrl != null && imageUrl!.trim().isNotEmpty ? CircleAvatar(
+                  backgroundImage: NetworkImage(imageUrl!),
                 ) : CircleAvatar(
                   child: Container(),
                 ),

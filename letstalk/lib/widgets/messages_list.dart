@@ -1,8 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:letstalk/models/message.dart';
 import 'package:letstalk/services/server.dart';
 import 'package:letstalk/utils/app_colors.dart';
 import 'package:letstalk/widgets/message_tile.dart';
+import 'package:letstalk/widgets/message_tile_error.dart';
 
 class MessagesList extends StatefulWidget {
   const MessagesList({Key? key}) : super(key: key);
@@ -16,7 +17,7 @@ class _MessagesListState extends State<MessagesList> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<List<Future<Message>>>(
       stream: Server.getMessages(),
       builder: (context, snapshot) {
         if(snapshot.hasError){
@@ -31,42 +32,59 @@ class _MessagesListState extends State<MessagesList> {
             ),
           );
         }
-        //TODO
         final data = snapshot.requireData;
         return ListView.builder(
-          itemCount: data.size,
+          itemCount: data.length,
           itemBuilder: (context, index) {
-            print(data);
-            return Container();
+            return FutureBuilder<Message>(
+              future: data[index],
+              builder: (context, asyncSnapshot){
+                if(asyncSnapshot.hasError){
+                  return Padding(
+                    padding: EdgeInsets.only(left: 10, bottom: 10, top: 10, right: MediaQuery.of(context).size.width / 5),
+                    child: const MessageTileError()
+                  );
+                }
+                if(asyncSnapshot.connectionState == ConnectionState.waiting){
+                  return Padding(
+                      padding: EdgeInsets.only(left: 10, bottom: 10, top: 10, right: MediaQuery.of(context).size.width / 5),
+                      child:Container(
+                      color: AppColors.fifthColor,
+                      child: const Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Text("Loading...",
+                          style: TextStyle(
+                            fontSize: 16
+                          ),
+                        ),
+                      )
+                    )
+                  );
+                }
+                if(asyncSnapshot.data!.owner == null){
+                  return Padding(
+                    padding: EdgeInsets.only(left: 10,bottom: 10, top: 10, right: MediaQuery.of(context).size.width / 5),
+                    child: const MessageTileError()
+                  );
+                }
+                bool isFromSelf = Server.currentUser!.id == asyncSnapshot.data!.owner!.id;
+                double pl = isFromSelf ? MediaQuery.of(context).size.width / 5 : 10,
+                      pr = !isFromSelf ? MediaQuery.of(context).size.width / 5 : 10;
+                return Padding(
+                  padding: EdgeInsets.only(left: pl, bottom: 10, top: 10, right: pr),
+                  child: MessageTile(
+                    flags: asyncSnapshot.data!.owner!.flags,
+                    user: asyncSnapshot.data!.owner!.username,
+                    isFromSelf: isFromSelf,
+                    message: asyncSnapshot.data!.message,
+                    imageUrl: asyncSnapshot.data!.owner!.urlImage,
+                  ),
+                );
+              },
+            );
           },
         );
       },
     );
   }
-
-/*
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-      reverse: true,
-      itemCount: _messages.length,
-      itemBuilder: (context, index){
-        bool isFromSelf = Server.currentUser!.id == _messages[index].owner.id;
-        double pl = isFromSelf ? MediaQuery.of(context).size.width / 5 : 0,
-              pr = !isFromSelf ? MediaQuery.of(context).size.width / 5 : 0;
-        return Padding(
-          padding: EdgeInsets.only(left: pl, bottom: 10, top: 10, right: pr),
-          child: MessageTile(
-            flags: _messages[index].owner.flags,
-            user: _messages[index].owner.username,
-            isFromSelf: isFromSelf,
-            message: _messages[index].message,
-            imageUrl: _messages[index].owner.urlImage,
-          ),
-        );
-      },
-    );
-  }
-  */
 }
