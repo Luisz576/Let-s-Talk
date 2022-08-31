@@ -145,13 +145,23 @@ class _LoginTabState extends State<LoginTab> {
                 isSignUpLoading = true;
               });
               Server.signUpWithUsernameAndPassword(usernameSignUpController.text.trim(), passwordSignUpController.text.trim()).then((user){
+                setState(() {
+                  isSignUpLoading = false;
+                });
                 if(user != null){
-                  Database.saveToken(user.token!);
-                  _connected();
-                }else{
-                  setState(() {
-                    isSignUpLoading = false;
+                  Database.saveToken(user.token!).then((v){
+                    if(v){
+                      _connected();
+                    }else{
+                      showSnackBar(context,
+                        title: "Sua conta foi criada!",
+                        titleColor: AppColors.whiteColor,
+                        backgroundColor: AppColors.sucessColor,
+                        duration: const Duration(seconds: 2)
+                      );
+                    }
                   });
+                }else{
                   showSnackBar(context,
                     title: "Não foi possível criar a conta!",
                     titleColor: AppColors.whiteColor,
