@@ -58,7 +58,7 @@ class _LoginTabState extends State<LoginTab> {
   _connected(){
     Navigator.pushAndRemoveUntil(context,
       MaterialPageRoute(
-        builder: (context) => ChatScreen(),
+        builder: (context) => const ChatScreen(),
       ),
       (route) => false
     );

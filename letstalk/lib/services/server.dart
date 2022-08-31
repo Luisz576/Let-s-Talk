@@ -144,10 +144,11 @@ class Server{
   }
 
   static Stream<List<Future<Message>>> getMessages(){
-    return FirebaseFirestore.instance.collection("messages").orderBy("createdAt").snapshots().map((e) => e.docs).map((list){
+    final snapshotsDocs = FirebaseFirestore.instance.collection("messages").orderBy("createdAt", descending: true).snapshots().map((e) => e.docs);
+    return snapshotsDocs.map((list){
       return list.map((document) async{
         return Message(
-          id: document.id, //TODO: verify if get correctly
+          id: document.id,
           owner: await _getUserById(document.data()["owner"]),
           message: document.data()["message"],
           imageUrl: document.data()["image"],

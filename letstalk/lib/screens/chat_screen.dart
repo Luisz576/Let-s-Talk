@@ -37,10 +37,12 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
       backgroundColor: AppColors.whiteColor,
-      body: const ChatTab(),
+      body: const SafeArea(
+        child: ChatTab(),
+      ),
       floatingActionButtonLocation: CustomFloatingActionButtonLocation(
-              MediaQuery.of(context).size.width * (5/6),
-              MediaQuery.of(context).size.height * (4/5),
+              MediaQuery.of(context).size.width * (5.1/6),
+              MediaQuery.of(context).size.height * (3.9/5),
       ),
       floatingActionButton: FloatingActionButton.small(
         onPressed: () => CallMe.call("scroll_down_chat"),

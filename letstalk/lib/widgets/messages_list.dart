@@ -15,94 +15,67 @@ class MessagesList extends StatefulWidget {
 
 class _MessagesListState extends State<MessagesList> {
   final _scrollController = ScrollController();
+  List<Message> messages = [];
 
   void _scrollDown() {
-    _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
-      duration: const Duration(seconds: 1),
-      curve: Curves.fastOutSlowIn,
-    );
+    if(_scrollController.hasClients){
+      _scrollController.animateTo(
+        _scrollController.position.minScrollExtent,
+        duration: const Duration(seconds: 1),
+        curve: Curves.fastOutSlowIn,
+      );
+    }
   }
 
   @override
   void initState(){
     super.initState();
     CallMe.add("scroll_down_chat", _scrollDown);
+    _registerServerListener();
+  }
+
+  _registerServerListener(){
+    Server.getMessages().listen((data) async{
+      List<Message> newMessages = [];
+      for(Future<Message> message in data){
+        newMessages.add(await message);
+      }
+      setState((){
+        messages.clear();
+        messages = newMessages;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    //TODO FIX STREAM THAT RELOAD ALL LIST
-    return StreamBuilder<List<Future<Message>>>(
-      stream: Server.getMessages(),
-      builder: (context, snapshot) {
-        if(snapshot.hasError){
-          return const Center(
-            child: Text("Houve um problema ao carregar..."),
+    return ListView.builder(
+      controller: _scrollController,
+      itemCount: messages.length,
+      physics: const BouncingScrollPhysics(),
+      reverse: true,
+      itemBuilder: (context, index) {
+        if(messages[index].owner == null){
+          return Padding(
+            padding: EdgeInsets.only(left: 10,bottom: 10, top: 10, right: MediaQuery.of(context).size.width / 5),
+            child: const MessageTileError()
           );
         }
-        if(snapshot.connectionState == ConnectionState.waiting){
-          return const Center(
-            child: CircularProgressIndicator(
-              color: AppColors.terciaryColor,
-            ),
-          );
-        }
-        final data = snapshot.requireData;
-        return ListView.builder(
-          controller: _scrollController,
-          itemCount: data.length,
-          itemBuilder: (context, index) {
-            return FutureBuilder<Message>(
-              future: data[index],
-              builder: (context, asyncSnapshot){
-                if(asyncSnapshot.hasError){
-                  return Padding(
-                    padding: EdgeInsets.only(left: 10, bottom: 10, top: 10, right: MediaQuery.of(context).size.width / 5),
-                    child: const MessageTileError()
-                  );
-                }
-                if(asyncSnapshot.connectionState == ConnectionState.waiting){
-                  return Padding(
-                      padding: EdgeInsets.only(left: 10, bottom: 10, top: 10, right: MediaQuery.of(context).size.width / 5),
-                      child:Container(
-                      color: AppColors.fifthColor,
-                      child: const Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Text("Loading...",
-                          style: TextStyle(
-                            fontSize: 16
-                          ),
-                        ),
-                      )
-                    )
-                  );
-                }
-                if(asyncSnapshot.data!.owner == null){
-                  return Padding(
-                    padding: EdgeInsets.only(left: 10,bottom: 10, top: 10, right: MediaQuery.of(context).size.width / 5),
-                    child: const MessageTileError()
-                  );
-                }
-                bool isFromSelf = Server.currentUser!.id == asyncSnapshot.data!.owner!.id;
-                double pl = isFromSelf ? MediaQuery.of(context).size.width / 5 : 10,
-                      pr = !isFromSelf ? MediaQuery.of(context).size.width / 5 : 10;
-                return Padding(
-                  padding: EdgeInsets.only(left: pl, bottom: 10, top: 10, right: pr),
-                  child: MessageTile(
-                    id: asyncSnapshot.data!.id,
-                    flags: asyncSnapshot.data!.owner!.flags,
-                    user: asyncSnapshot.data!.owner!.username,
-                    isFromSelf: isFromSelf,
-                    message: asyncSnapshot.data!.message,
-                    imageUrl: asyncSnapshot.data!.owner!.urlImage,
-                    deleted: asyncSnapshot.data!.deleted,
-                    messageImage: asyncSnapshot.data!.imageUrl
-                  ),
-                );
-              },
-            );
-          },
+        bool isFromSelf = Server.currentUser!.id == messages[index].owner!.id;
+        double pl = isFromSelf ? MediaQuery.of(context).size.width / 5 : 10,
+        pr = !isFromSelf ? MediaQuery.of(context).size.width / 5 : 10;
+        return Padding(
+          padding: EdgeInsets.only(left: pl, bottom: 10, top: 10, right: pr),
+          child: MessageTile(
+            id: messages[index].id,
+            flags: messages[index].owner!.flags,
+            user: messages[index].owner!.username,
+            isFromSelf: isFromSelf,
+            message: messages[index].message,
+            imageUrl: messages[index].owner!.urlImage,
+            deleted: messages[index].deleted,
+            messageImage: messages[index].imageUrl
+          ),
         );
       },
     );

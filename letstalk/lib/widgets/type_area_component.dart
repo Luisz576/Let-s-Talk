@@ -21,7 +21,7 @@ class _TypeAreaComponentState extends State<TypeAreaComponent> {
     return Container(
       color: AppColors.primaryColor,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
           children: [
             Expanded(
@@ -29,6 +29,9 @@ class _TypeAreaComponentState extends State<TypeAreaComponent> {
               child: TextField(
                 controller: typeController,
                 maxLength: 160,
+                textCapitalization: TextCapitalization.sentences,
+                autocorrect: true,
+                enableSuggestions: true,
                 buildCounter: (context, {currentLength = 0, isFocused = false, maxLength}) => null,
                 decoration: const InputDecoration(
                   filled: true,
@@ -37,6 +40,7 @@ class _TypeAreaComponentState extends State<TypeAreaComponent> {
                   hintStyle: TextStyle(
                     color: AppColors.hintGrayColor
                   ),
+                  labelText: "Escreva aqui sua mensagem",
                   errorBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
@@ -135,6 +139,7 @@ class _TypeAreaComponentState extends State<TypeAreaComponent> {
                   setState(() {
                     isUploadingSomething = true;
                   });
+                  FocusScope.of(context).unfocus();
                   Server.sendMessage(typeController.text.trim()).then((res){
                     if(!res){
                       showSnackBar(context,
@@ -144,7 +149,7 @@ class _TypeAreaComponentState extends State<TypeAreaComponent> {
                         duration: const Duration(milliseconds: 500)
                       );
                     }else{
-                      typeController.text = "";
+                      typeController.clear();
                     }
                     setState(() {
                       isUploadingSomething = false;
