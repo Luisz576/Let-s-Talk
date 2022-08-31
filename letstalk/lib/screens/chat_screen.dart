@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:letstalk/screens/settings_screen.dart';
 import 'package:letstalk/tabs/chat_tab.dart';
 import 'package:letstalk/utils/app_colors.dart';
-import 'package:letstalk/utils/call_me.dart';
 import 'package:letstalk/utils/custom_floating_action_button_location.dart';
+import 'package:letstalk/widgets/custom_floating_action_button.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -44,13 +44,7 @@ class _ChatScreenState extends State<ChatScreen> {
               MediaQuery.of(context).size.width * (5.1/6),
               MediaQuery.of(context).size.height * (3.9/5),
       ),
-      floatingActionButton: FloatingActionButton.small(
-        onPressed: () => CallMe.call("scroll_down_chat"),
-        backgroundColor: AppColors.terciaryColor,
-        child: const Icon(Icons.arrow_downward,
-          color: AppColors.whiteColor,
-        ),
-      ),
+      floatingActionButton: const CustomFloatingActionButton(),
     );
   }
 }

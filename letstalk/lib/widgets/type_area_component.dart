@@ -131,7 +131,9 @@ class _TypeAreaComponentState extends State<TypeAreaComponent> {
               icon: Icons.camera_alt,
               iconColor: AppColors.whiteColor,
             ),
-            ExpandedIconButton(
+            isUploadingSomething ? const CircularProgressIndicator(
+              color: AppColors.whiteColor,
+            ) : ExpandedIconButton(
               flex: 1,
               onPressed: (){
                 if(isUploadingSomething){ return; }
@@ -157,7 +159,7 @@ class _TypeAreaComponentState extends State<TypeAreaComponent> {
                   });
                 }
               },
-              icon: isUploadingSomething ? Icons.arrow_upward : Icons.send,
+              icon: Icons.send,
               iconColor: AppColors.whiteColor,
             ),
           ],

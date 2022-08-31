@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:letstalk/models/message.dart';
 import 'package:letstalk/services/server.dart';
-import 'package:letstalk/utils/app_colors.dart';
 import 'package:letstalk/utils/call_me.dart';
 import 'package:letstalk/widgets/message_tile.dart';
 import 'package:letstalk/widgets/message_tile_error.dart';
@@ -32,6 +31,13 @@ class _MessagesListState extends State<MessagesList> {
     super.initState();
     CallMe.add("scroll_down_chat", _scrollDown);
     _registerServerListener();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels < 20) {
+        CallMe.call("is_in_the_end_chat_list");
+      }else{
+        CallMe.call("is_not_in_the_end_chat_list");
+      }
+    });
   }
 
   _registerServerListener(){
