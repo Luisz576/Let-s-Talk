@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:letstalk/functions/show_snack_bar.dart';
+import 'package:letstalk/services/files.dart';
 import 'package:letstalk/services/server.dart';
 import 'package:letstalk/utils/app_colors.dart';
+import 'package:letstalk/widgets/expanded_icon_button.dart';
 
-class TypeAreaComponent extends StatelessWidget {
+class TypeAreaComponent extends StatefulWidget {
+  const TypeAreaComponent({Key? key}) : super(key: key);
+
+  @override
+  State<TypeAreaComponent> createState() => _TypeAreaComponentState();
+}
+
+class _TypeAreaComponentState extends State<TypeAreaComponent> {
   final typeController = TextEditingController();
-  TypeAreaComponent({Key? key}) : super(key: key);
+  bool isUploadingSomething = false;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +25,7 @@ class TypeAreaComponent extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              flex: 4,
+              flex: 6,
               child: TextField(
                 controller: typeController,
                 maxLength: 160,
@@ -36,28 +45,116 @@ class TypeAreaComponent extends StatelessWidget {
                 ),
               ),
             ),
-            Expanded(
+            ExpandedIconButton(
               flex: 1,
-              child: IconButton(
-                onPressed: (){
-                  if(typeController.text.trim().isNotEmpty){
-                    Server.sendMessage(typeController.text.trim()).then((res){
-                      if(!res){
+              onPressed: (){
+                if(isUploadingSomething){ return; }
+                setState(() {
+                  isUploadingSomething = true;
+                });
+                Files.pickImage().then((file) {
+                  if(file != null){
+                    Server.sendImage(file,
+                      whenComplete: (){
+                        setState(() {
+                          isUploadingSomething = false;
+                        });
+                      },
+                      whenError: (){
                         showSnackBar(context,
-                          title: "Não foi possível enviar...",
-                          titleColor: AppColors.whiteColor,
+                          title: "Não foi possível enviar a imagem!",
                           backgroundColor: AppColors.errorColor,
-                          duration: const Duration(milliseconds: 500)
+                          titleColor: AppColors.whiteColor
                         );
-                      }else{
-                        typeController.text = "";
+                        setState(() {
+                          isUploadingSomething = false;
+                        });
                       }
+                    );
+                  }else{
+                    showSnackBar(context,
+                      title: "Nenhum imagem selecionada!",
+                      backgroundColor: AppColors.errorColor,
+                      titleColor: AppColors.whiteColor
+                    );
+                    setState(() {
+                      isUploadingSomething = false;
                     });
                   }
-                },
-                icon: const Icon(Icons.send, color: AppColors.whiteColor,),
-              ),
-            )
+                });
+              },
+              icon: Icons.photo,
+              iconColor: AppColors.whiteColor,
+            ),
+            ExpandedIconButton(
+              flex: 1,
+              onPressed: (){
+                if(isUploadingSomething){ return; }
+                setState(() {
+                  isUploadingSomething = true;
+                });
+                Files.takePhoto().then((file) {
+                  if(file != null){
+                    Server.sendImage(file,
+                      whenComplete: (){
+                        setState(() {
+                          isUploadingSomething = false;
+                        });
+                      },
+                      whenError: (){
+                        showSnackBar(context,
+                          title: "Não foi possível enviar a imagem!",
+                          backgroundColor: AppColors.errorColor,
+                          titleColor: AppColors.whiteColor
+                        );
+                        setState(() {
+                          isUploadingSomething = false;
+                        });
+                      }
+                    );
+                  }else{
+                    showSnackBar(context,
+                      title: "Nenhum imagem selecionada!",
+                      backgroundColor: AppColors.errorColor,
+                      titleColor: AppColors.whiteColor
+                    );
+                    setState(() {
+                      isUploadingSomething = false;
+                    });
+                  }
+                });
+              },
+              icon: Icons.camera_alt,
+              iconColor: AppColors.whiteColor,
+            ),
+            ExpandedIconButton(
+              flex: 1,
+              onPressed: (){
+                if(isUploadingSomething){ return; }
+                if(typeController.text.trim().isNotEmpty){
+                  setState(() {
+                    isUploadingSomething = true;
+                  });
+                  Server.sendMessage(typeController.text.trim()).then((res){
+                    if(!res){
+                      showSnackBar(context,
+                        title: "Não foi possível enviar...",
+                        titleColor: AppColors.whiteColor,
+                        backgroundColor: AppColors.errorColor,
+                        duration: const Duration(milliseconds: 500)
+                      );
+                    }else{
+                      typeController.text = "";
+                    }
+                    setState(() {
+                      isUploadingSomething = false;
+                    });
+                  });
+                }
+              },
+              icon: isUploadingSomething ? Icons.arrow_upward : Icons.send,
+              iconColor: AppColors.whiteColor,
+            ),
           ],
         ),
       ),

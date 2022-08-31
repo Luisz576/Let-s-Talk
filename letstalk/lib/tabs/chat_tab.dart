@@ -8,8 +8,8 @@ class ChatTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
-        const Expanded(
+      children: const [
+        Expanded(
           flex: 5,
           child: MessagesList(),
         ),

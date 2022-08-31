@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:letstalk/models/message.dart';
 import 'package:letstalk/services/server.dart';
 import 'package:letstalk/utils/app_colors.dart';
+import 'package:letstalk/utils/call_me.dart';
 import 'package:letstalk/widgets/message_tile.dart';
 import 'package:letstalk/widgets/message_tile_error.dart';
 
@@ -13,10 +14,25 @@ class MessagesList extends StatefulWidget {
 }
 
 class _MessagesListState extends State<MessagesList> {
-  final queryFirestore = Server.getMessages();
+  final _scrollController = ScrollController();
+
+  void _scrollDown() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(seconds: 1),
+      curve: Curves.fastOutSlowIn,
+    );
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    CallMe.add("scroll_down_chat", _scrollDown);
+  }
 
   @override
   Widget build(BuildContext context) {
+    //TODO FIX STREAM THAT RELOAD ALL LIST
     return StreamBuilder<List<Future<Message>>>(
       stream: Server.getMessages(),
       builder: (context, snapshot) {
@@ -34,6 +50,7 @@ class _MessagesListState extends State<MessagesList> {
         }
         final data = snapshot.requireData;
         return ListView.builder(
+          controller: _scrollController,
           itemCount: data.length,
           itemBuilder: (context, index) {
             return FutureBuilder<Message>(
@@ -73,11 +90,14 @@ class _MessagesListState extends State<MessagesList> {
                 return Padding(
                   padding: EdgeInsets.only(left: pl, bottom: 10, top: 10, right: pr),
                   child: MessageTile(
+                    id: asyncSnapshot.data!.id,
                     flags: asyncSnapshot.data!.owner!.flags,
                     user: asyncSnapshot.data!.owner!.username,
                     isFromSelf: isFromSelf,
                     message: asyncSnapshot.data!.message,
                     imageUrl: asyncSnapshot.data!.owner!.urlImage,
+                    deleted: asyncSnapshot.data!.deleted,
+                    messageImage: asyncSnapshot.data!.imageUrl
                   ),
                 );
               },

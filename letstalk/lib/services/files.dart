@@ -8,4 +8,8 @@ class Files{
     return await _picker.pickImage(source: ImageSource.gallery);
   }
 
+  static Future<XFile?> takePhoto() async{
+    return await _picker.pickImage(source: ImageSource.camera);
+  }
+
 }

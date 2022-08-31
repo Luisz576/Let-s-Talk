@@ -119,6 +119,8 @@ class Server{
       } on FirebaseException catch(_){
         whenError();
       }
+    }else{
+      whenError();
     }
   }
   static Future<void> _changeProfileImage(String imageUrl) async{
@@ -133,7 +135,8 @@ class Server{
       await FirebaseFirestore.instance.collection("messages").add({
         "createdAt": DateTime.now().toString(),
         "message": message,
-        "owner": _user!.id
+        "owner": _user!.id,
+        "deleted": false,
       });
       return true;
     }
@@ -144,11 +147,58 @@ class Server{
     return FirebaseFirestore.instance.collection("messages").orderBy("createdAt").snapshots().map((e) => e.docs).map((list){
       return list.map((document) async{
         return Message(
+          id: document.id, //TODO: verify if get correctly
           owner: await _getUserById(document.data()["owner"]),
-          message: document.data()["message"]
+          message: document.data()["message"],
+          imageUrl: document.data()["image"],
+          deleted: document.data()["deleted"] ?? false,
         );
       }).toList();
     });
+  }
+
+  static Future<void> deleteMessage(String messageId) async{
+    if(_user == null){ return; }
+    // this code is unsecure, is recommeded you change it
+    final data = await FirebaseFirestore.instance.collection("messages").doc(messageId).get();
+    if(data["owner"] == _user!.id){
+      await FirebaseFirestore.instance.collection("messages").doc(messageId).update(
+        {
+          "deleted": true
+        }
+      );
+    }
+  }
+
+  static Future<bool> sendImage(XFile xfile, {required Function() whenComplete, required Function() whenError}) async{
+    if(_user != null){
+      // this code is unsecure, is recommeded you change it
+      final file = File(xfile.path);
+      try{
+        String ref = 'images/img-${_user!.username}-${DateTime.now().toString()}.jpg';
+        if(file.path.substring(file.path.length - 4, file.path.length) == "gif"){
+          ref = 'images/img-${_user!.username}-${DateTime.now().toString()}.gif';
+        }
+        UploadTask uploadTask = FirebaseStorage.instance.ref(ref).putFile(file);
+        uploadTask.whenComplete(() async{
+          String imageUrl = await FirebaseStorage.instance.ref(ref).getDownloadURL();
+          await FirebaseFirestore.instance.collection("messages").add({
+            "createdAt": DateTime.now().toString(),
+            "message": "<image> !sua versão ainda não suporta imagens",
+            "owner": _user!.id,
+            "deleted": false,
+            "image": imageUrl
+          });
+          whenComplete();
+          return true;
+        });
+      } on FirebaseException catch(_){
+        whenError();
+      }
+    }else{
+      whenError();
+    }
+    return false;
   }
 
   static Future<User?> _getUserById(String id) async{
