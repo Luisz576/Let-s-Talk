@@ -107,10 +107,9 @@ class Server{
   static changeProfileImage(XFile xfile, {required Function() whenComplete, required Function() whenError}) async{
     if(_user != null){
       // this code is unsecure, is recommeded you change it
-      final file = File(xfile.path);
       try{
         String ref = 'profile_images/${_user!.username}-${DateTime.now().toString()}.jpg';
-        UploadTask uploadTask = FirebaseStorage.instance.ref(ref).putFile(file);
+        UploadTask uploadTask = _uploadImage(xfile, ref);
         uploadTask.whenComplete(() async{
           String imageUrl = await FirebaseStorage.instance.ref(ref).getDownloadURL();
           await _changeProfileImage(imageUrl);
@@ -174,13 +173,9 @@ class Server{
   static Future<bool> sendImage(XFile xfile, {required Function() whenComplete, required Function() whenError}) async{
     if(_user != null){
       // this code is unsecure, is recommeded you change it
-      final file = File(xfile.path);
       try{
         String ref = 'images/img-${_user!.username}-${DateTime.now().toString()}.jpg';
-        if(file.path.substring(file.path.length - 4, file.path.length) == "gif"){
-          ref = 'images/img-${_user!.username}-${DateTime.now().toString()}.gif';
-        }
-        UploadTask uploadTask = FirebaseStorage.instance.ref(ref).putFile(file);
+        UploadTask uploadTask = _uploadImage(xfile, ref);
         uploadTask.whenComplete(() async{
           String imageUrl = await FirebaseStorage.instance.ref(ref).getDownloadURL();
           await FirebaseFirestore.instance.collection("messages").add({
@@ -200,6 +195,11 @@ class Server{
       whenError();
     }
     return false;
+  }
+
+  static UploadTask _uploadImage(XFile xfile, String path){
+    final file = File(xfile.path);
+    return FirebaseStorage.instance.ref(path).putFile(file);
   }
 
   static Future<User?> _getUserById(String id) async{

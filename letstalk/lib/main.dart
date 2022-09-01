@@ -11,6 +11,8 @@ void main() async{
     options: DefaultFirebaseOptions.currentPlatform
   );
 
+  //TODO: Refactory with ValueNotifier
+
   runApp(const LetsTalk());
 }
 
